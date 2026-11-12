@@ -1,4 +1,6 @@
 import streamlit as st
+st.set_page_config(page_title="AuditorIA Pro | Brayan Iriarte", page_icon="✔", layout="wide", initial_sidebar_state="expanded")
+
 import pandas as pd
 import re, fitz, difflib, time, requests, os, shutil
 from io import BytesIO
@@ -38,12 +40,9 @@ try:
     GROQ_API_KEY = st.secrets["GROQ_API_KEY"]
 except:
     GROQ_API_KEY = "gsk_PEGA_AQUI_TU_LLAVE_NUEVA"
-# ... desde aquí sigue todo tu código igual que antes ...
 
 MODELO = "openai/gpt-oss-120b"
 AUTOR = "Brayan Melvin Iriarte Peralta"
-
-st.set_page_config(page_title="AuditorIA Pro | Brayan Iriarte", page_icon="✔", layout="wide", initial_sidebar_state="expanded")
 
 st.markdown("""
 <style>
@@ -118,11 +117,15 @@ def extraer_pdf(file):
     text=""; doc=fitz.open(stream=file.read(), filetype="pdf")
     for p in doc: text+=p.get_text()+"\n"
     uso_ocr=False
-    if len(text.strip())<50 or "RUC" not in text:
-        uso_ocr=True; text=""
-        for p in doc:
-            pix=p.get_pixmap(dpi=300); img=Image.frombytes("RGB",[pix.width,pix.height],pix.samples)
-            text+=pytesseract.image_to_string(img, lang='eng+spa')+"\n"
+    if (len(text.strip())<50 or "RUC" not in text) and TESSERACT_OK:
+        try:
+            uso_ocr=True; text=""
+            for p in doc:
+                pix=p.get_pixmap(dpi=300); img=Image.frombytes("RGB",[pix.width,pix.height],pix.samples)
+                text+=pytesseract.image_to_string(img, lang='eng+spa')+"\n"
+        except Exception as e:
+            uso_ocr=False
+            pass
     m_ruc=re.search(r"(\d{11})", text); ruc_val=m_ruc.group(1) if m_ruc else "NO ENCONTRADO"
     fechas=re.findall(r"(\d{2}[-/]\d{2}[-/]\d{4})", text)
     montos=re.findall(r"([\d,]+\.\d{2})", text)
