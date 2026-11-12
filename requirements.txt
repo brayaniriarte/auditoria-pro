@@ -1,0 +1,8 @@
+streamlit
+pandas
+PyMuPDF
+Pillow
+pytesseract
+openpyxl
+reportlab
+requests
