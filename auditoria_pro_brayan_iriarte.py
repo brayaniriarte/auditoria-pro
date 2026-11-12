@@ -3,20 +3,42 @@ import pandas as pd
 import re, fitz, difflib, time, requests, os, shutil
 from io import BytesIO
 from PIL import Image
-import pytesseract
 
-# Para que funcione en tu PC y en la nube
-if shutil.which("tesseract"):
-    pytesseract.pytesseract.tesseract_cmd = shutil.which("tesseract")
-else:
-    pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
+# --- CANDADO PRIVADO ---
+try:
+    CLAVE_APP = st.secrets["APP_PASSWORD"]
+except:
+    CLAVE_APP = "brayan123"
 
-# ===== TU LLAVE - SEGURO PARA GITHUB Y NUBE =====
-# En tu PC usa la de abajo, en la nube usa Secrets
+if "auth_ok" not in st.session_state:
+    st.session_state.auth_ok = False
+
+if not st.session_state.auth_ok:
+    st.markdown("### AuditorIA Pro - Acceso Privado")
+    st.write("Proyecto de Brayan Melvin Iriarte Peralta - Prototipo en validación")
+    pwd = st.text_input("Ingresa la contraseña de acceso:", type="password")
+    if st.button("Entrar"):
+        if pwd == CLAVE_APP:
+            st.session_state.auth_ok = True
+            st.rerun()
+        else:
+            st.error("Contraseña incorrecta")
+    st.stop()
+# --- FIN CANDADO ---
+
+try:
+    import pytesseract
+    TESSERACT_OK = True
+    if shutil.which("tesseract"):
+        pytesseract.pytesseract.tesseract_cmd = shutil.which("tesseract")
+except:
+    TESSERACT_OK = False
+
 try:
     GROQ_API_KEY = st.secrets["GROQ_API_KEY"]
 except:
     GROQ_API_KEY = "gsk_PEGA_AQUI_TU_LLAVE_NUEVA"
+# ... desde aquí sigue todo tu código igual que antes ...
 
 MODELO = "openai/gpt-oss-120b"
 AUTOR = "Brayan Melvin Iriarte Peralta"
