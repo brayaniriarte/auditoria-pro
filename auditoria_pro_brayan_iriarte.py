@@ -8,7 +8,7 @@ from PIL import Image
 try:
     CLAVE_APP = st.secrets["APP_PASSWORD"]
 except:
-    CLAVE_APP = "brayan123"
+    CLAVE_APP = "123456"
 
 if "auth_ok" not in st.session_state:
     st.session_state.auth_ok = False
